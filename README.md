@@ -101,3 +101,20 @@ Hull_Tactical/
 │── README.md
 └── requirements.txt
 ```
+
+## Environment Setup
+
+This project is fully localized and optimized to run stably on macOS, including Apple Silicon (M1/M2/M3) environments, without encountering common compilation issues.
+
+### Create a Virtual Environment
+To avoid dependency conflicts, it is highly recommended to use `conda` to set up an isolated environment:
+
+```bash
+# Create and activate a Python 3.10 environment
+conda create -n hull python=3.10 -y
+conda activate hull
+
+### Installation
+```bash
+pip install -r requirements.txt
+```
