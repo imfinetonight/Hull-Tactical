@@ -2,7 +2,7 @@
 🥈 Silver Medal Solution  
 Ranked 174th out of 3,677 teams in the Kaggle Hull Tactical Market Prediction competition.  
 
-![Pipeline](../images/174th.png)
+![Pipeline](images/174th.png)
 *The current username is **Water Baby**.  
 
 ## Overview
@@ -15,7 +15,7 @@ This repository presents an end-to-end quantitative trading pipeline, covering f
 Rather than treating forecasting as the final objective, this solution separates prediction from execution by combining an ensemble forecasting engine with adaptive position sizing. 
 
 ## Architecture
-![Pipeline](../images/Architecture.png)  
+![Pipeline](images/Architecture.png)  
 
 The solution is organized into two major components:
 
@@ -27,7 +27,7 @@ The solution is organized into two major components:
 2. Execution Engine
    - Market regime detection
    - Adaptive risk adjustment
-   - Dynamic position sizing
+   - Adaptive position sizing
 
 ## Key Highlights
 - Adaptive position sizing

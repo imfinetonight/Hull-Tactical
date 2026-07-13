@@ -20,3 +20,6 @@ catboost_info/
 
 # Mac system files
 .DS_Store
+
+# Other files
+others/
