@@ -1,43 +1,44 @@
 # Hull Tactical - Market Prediction
-🥈 Silver Medal Solution  
-Ranked 174th out of 3,677 teams in the Kaggle Hull Tactical Market Prediction competition.  
+### 🥈 Silver Medal Solution ###
+KaggleのHull Tactical Market Predictionコンペティションにおいて、3,677チーム中174位にランクインしました。  
 
-![Pipeline](images/174th.png)
-*The current username is **Water Baby**.  
+![Pipeline](../images/174th.png)
+(※現ユーザー名: **Water Baby**)  
 
-## Overview
-This repository contains my solution for the **Kaggle Hull Tactical Market Prediction competition**.  
-The task of this competition is to predict the stock market returns as represented by the excess returns of the S&P 500 using a tailored set of market data features while also managing volatility constraints.  
-Inference was performed through a server gateway under strict latency constraints.  
-*Competition page:* https://www.kaggle.com/competitions/hull-tactical-market-prediction
+## 概要
+このリポジトリでは、**Kaggle Hull Tactical Market Predictionコンペティション**　における私の解法を掲示します。  
+本コンペティションの課題は、ボラティリティの制約を考慮しつつ、特定の市場データの特徴量を用いて、S&P500の超過収益率で表される株式市場の収益率を予測することです。  
+推論はレイテンシ制約下でサーバーゲートウェイを介して実行されました。  
+*コンペティションページ：* https://www.kaggle.com/competitions/hull-tactical-market-prediction  
 
-This repository presents an end-to-end quantitative trading pipeline, covering feature engineering, ensemble learning, market regime detection, and adaptive position sizing.  
-Rather than treating forecasting as the final objective, this solution separates prediction from execution by combining an ensemble forecasting engine with adaptive position sizing. 
+本リポジトリでは、特徴量エンジニアリング、アンサンブル学習、市場レジームの検出、および適応型ポジションサイジングを網羅したエンドツーエンドのクオンツトレーディング・パイプラインを提示します。  
+このソリューションでは、アンサンブル予測エンジンと適応型ポジションサイジングを組み合わせることで、予測とポジショニングを分離しています。
 
-## Architecture
-![Pipeline](images/Architecture.png)  
+## アーキテクチャ
+このソリューションは、2つの主要なコンポーネントで構成されています。
 
-The solution is organized into two major components:
-
-1. Forecast Engine
+1. 予測エンジン
    - Feature engineering
    - Model ensemble (CatBoost + LightGBM)
    - Ridge stacking
 
-2. Execution Engine
+2. ポジショニングエンジン
    - Market regime detection
    - Adaptive risk adjustment
    - Dynamic position sizing
 
-## Key Highlights
+![Pipeline](../images/Architecture.png)  
+
+## 主なハイライト
 - Adaptive position sizing
 - Market regime detection
 - Ridge stacking (CatBoost × LightGBM)
 - Stateful inference pipeline
 - Time-series feature engineering
 
-## Feature Engineering
-Implemented several time-series and market-aware features:
+## 特徴量エンジニアリング
+時系列および市場の特性を考慮した特徴量をいくつか実装しました。
+また、すべての前処理は、再利用可能な scikit-learn の Pipeline にカプセル化されました。
 
 - Lag features
 - Rolling statistics
@@ -47,9 +48,7 @@ Implemented several time-series and market-aware features:
 - PCA-compressed latent factors
 - Seasonal features
 
-All preprocessing was encapsulated in a reusable scikit-learn Pipeline.
-
-## Modeling
+## モデリング
 Ensemble Models:
 
 - CatBoost (4 PCA variants)
@@ -60,15 +59,8 @@ Validation:
 
 - Time Series Cross Validation
 
-Deployment:
-
-- Kaggle Inference Server
-
-## Lessons Learned
-
-This competition taught me that model performance alone is not sufficient for production-grade machine learning.
-
-I learned how to:
+## 学び
+How to:
 
 - Build reproducible ML pipelines
 - Prevent time-series leakage
@@ -77,13 +69,16 @@ I learned how to:
 - Transform model predictions into adaptive trading positions
 - Optimize latency-aware inference pipelines
 
-I realized that generating accurate predictions is only one part of a trading system.  
-Equally important is transforming predictions into robust portfolio positions.  
+正確な予測を生成することは、トレーディングシステムの一側面に過ぎず、予測を堅牢なポジションへと変換することも、同様に重要であることを学びました。
 
 ## Repository Structure
 
 ```
 Hull_Tactical/
+│── README/
+│   ├── README.md
+│   └── README_jpn.md
+│
 │── images/
 │   ├── 174th.png
 │   └── Architecture.png
@@ -98,16 +93,15 @@ Hull_Tactical/
 │
 │── .gitignore
 │── LICENSE
-│── README.md
 └── requirements.txt
 ```
 
-## Environment Setup
+## 環境設定
 
-This project is fully localized and optimized to run stably on macOS, including Apple Silicon (M1/M2/M3) environments, without encountering common compilation issues.
+本プロジェクトは完全にローカライズおよび最適化されており、Appleシリコン（M1/M2/M3）環境を含む macOS 上で、一般的なコンパイルの問題に遭遇することなく安定して動作します。
 
-### Create a Virtual Environment
-To avoid dependency conflicts, it is highly recommended to use `conda` to set up an isolated environment:
+### 仮想環境
+依存関係の競合を避けるため、`conda`を使用して隔離された環境を構築することを推奨します。 
 
 ```bash
 # Create and activate a Python 3.10 environment
@@ -115,7 +109,7 @@ conda create -n hull python=3.10 -y
 conda activate hull
 ```
 
-### Installation
+### インストール
 ```bash
 pip install -r requirements.txt
 ```
