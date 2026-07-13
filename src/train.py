@@ -3,7 +3,9 @@ import numpy as np
 import pandas as pd
 import polars as pl
 import joblib
+
 import os
+os.makedirs('outputs', exist_ok=True)
 
 import random
 SEED = 42
@@ -50,9 +52,9 @@ def rmse(forward_returns, preds):
 # model evaluation
 def evaluate_model(forward_returns, preds):
     return {
-        "spearman_corr": spearman_corr(forward_returns, preds),
-        "direction_accuracy": direction_accuracy(forward_returns, preds),
-        "rmse": rmse(forward_returns, preds),
+        'spearman_corr': spearman_corr(forward_returns, preds),
+        'direction_accuracy': direction_accuracy(forward_returns, preds),
+        'rmse': rmse(forward_returns, preds),
     }
 
 # Competition evaluation
@@ -147,12 +149,12 @@ true_forward_returns = data.tail(180)['forward_returns']
 # 特徴量作成用 （create_features の最過去日準拠）
 tail = pl.DataFrame(ttt.copy())
 tail.write_parquet('./outputs/tail.parquet')
-print('✅バッファデータ(保存済:"tail.parquet")')
+print('✅tail.parquet')
 
 # zスコア用 （forward_returns のリストを予測値の累積として扱う）
 preds_sim = pl.DataFrame(data[['forward_returns']].copy())
 preds_sim.write_parquet('./outputs/preds_sim.parquet')
-print('✅バッファデータ(保存済:"preds_sim.parquet")')
+print('✅preds_sim.parquet')
 
 # ===================================================================================================
 # CatBoost Hyper Parameter（初期設定）
@@ -194,15 +196,15 @@ def catboost_cv(df_train, features, target='forward_returns', params=cat_params,
         score = spearmanr(y_va, pred)[0]
         scores.append(score)
         
-        print(f"Fold {fold} | Spearman: {score:.4f} | best_iter: {model.get_best_iteration()}")
+        print(f'Fold {fold} | Spearman: {score:.4f} | best_iter: {model.get_best_iteration()}')
 
     # 全体 OOF
     oof_score = spearmanr(df_train[target], oof)[0]
-    print("\n======================")
-    print(" CatBoost Baseline CV ")
-    print("======================")
-    print(f"Mean Spearman: {np.mean(scores):.5f}")
-    print(f"OOF Spearman: {oof_score:.5f}")
+    print('\n======================')
+    print(' CatBoost Baseline CV ')
+    print('======================')
+    print(f'Mean Spearman: {np.mean(scores):.5f}')
+    print(f'OOF Spearman: {oof_score:.5f}')
 
     return oof
 
@@ -232,8 +234,8 @@ def catboost_cv_for_sweep(df_train, features, target='forward_returns', params=c
         
     # 全体 OOF
     oof_score = spearmanr(df_train[target], oof)[0]
-    print(f"Mean Spearman: {np.mean(scores):.5f}")
-    print(f"OOF Spearman: {oof_score:.5f}")
+    print(f'Mean Spearman: {np.mean(scores):.5f}')
+    print(f'OOF Spearman: {oof_score:.5f}')
 
     return
 
@@ -281,15 +283,15 @@ def lightgbm_cv(df_train, features, target='forward_returns', params=lgb_params,
         score = spearmanr(y_va, pred)[0]
         scores.append(score)
         
-        print(f"Fold {fold} | Spearman: {score:.4f} | best_iter: {model.best_iteration_}")
+        print(f'Fold {fold} | Spearman: {score:.4f} | best_iter: {model.best_iteration_}')
 
     # 全体 OOF
     oof_score = spearmanr(df_train[target], oof)[0]
-    print("\n======================")
-    print(" LightGBM Baseline CV ")
-    print("======================")
-    print(f"Mean Spearman: {np.mean(scores):.5f}")
-    print(f"OOF Spearman: {oof_score:.5f}")
+    print('\n======================')
+    print(' LightGBM Baseline CV ')
+    print('======================')
+    print(f'Mean Spearman: {np.mean(scores):.5f}')
+    print(f'OOF Spearman: {oof_score:.5f}')
 
     return oof
 
@@ -319,8 +321,8 @@ def lightgbm_cv_for_sweep(df_train, features, target='forward_returns', params=l
         
     # 全体 OOF
     oof_score = spearmanr(df_train[target], oof)[0]
-    print(f"Mean Spearman: {np.mean(scores):.5f}")
-    print(f"OOF Spearman: {oof_score:.5f}")
+    print(f'Mean Spearman: {np.mean(scores):.5f}')
+    print(f'OOF Spearman: {oof_score:.5f}')
 
     return oof
 
@@ -343,7 +345,7 @@ rank_cols = [f'{c}_rank' for c in anon_cols]
 # ★ joblib.dump -> 'col_list.pkl'
 joblib.dump({'anon_cols': anon_cols, 'rank_cols': rank_cols}, './outputs/col_list.pkl')
 
-print('✅anon_cols, rank_cols(保存済:"./outputs/col_list.pkl")')
+print('✅anon_cols, rank_cols(col_list.pkl)')
 
 # ===================================================================================================
 
@@ -360,7 +362,7 @@ macro_pca_pipeline.fit(neo_train[rank_cols])
 # ★ joblib.dump -> 'macro_pca_pipeline.pkl'
 joblib.dump(macro_pca_pipeline, './outputs/macro_pca_pipeline.pkl')
 
-print('✅パイプライン(保存済:"./outputs/macro_pca_pipeline.pkl")')
+print('✅macro_pca_pipeline.pkl')
 
 # ===================================================================================================
 
@@ -375,7 +377,7 @@ kmeans_pipeline.fit(macro_pca_pipeline.transform(neo_train[rank_cols]))
 # ★ joblib.dump -> 'kmeans_pipeline.pkl'
 joblib.dump(kmeans_pipeline, './outputs/kmeans_pipeline.pkl')
 
-print('✅パイプライン(保存済:"./outputs/kmeans_pipeline.pkl")')
+print('✅kmeans_pipeline.pkl')
 
 # ===================================================================================================
 
@@ -400,7 +402,7 @@ for n_components in cat_components_list:
     # ★ joblib.dump -> 'pca_pipeline_n{n_components}.pkl'
     joblib.dump(pca_pipeline_for_cat, f'./outputs/pca_pipeline_for_cat_n{n_components}.pkl')
 
-    print(f'✅パイプライン(保存済:"./outputs/pca_pipeline_n{n_components}.pkl")')
+    print(f'✅pca_pipeline_for_cat_n{n_components}.pkl')
 
 # ===================================================================================================
 
@@ -424,7 +426,7 @@ pca_pipeline_for_lgb_n83.fit(neo_train[rank_cols])
 # ★ joblib.dump -> 'pca_pipeline_for_lgb_n83.pkl'
 joblib.dump(pca_pipeline_for_lgb_n83, './outputs/pca_pipeline_for_lgb_n83.pkl')
 
-print('✅パイプライン(保存済:"./outputs/pca_pipeline_for_lgb_n83.pkl")')
+print('✅pca_pipeline_for_lgb_n83.pkl')
 
 # ===================================================================================================
 
@@ -595,7 +597,7 @@ def processing_anon_features_for_sweep(df, num_sweep):
     #])
     #sweep_features = pca_pipeline_for_sweep.fit_transform(df[rank_cols])
     
-    sweep_df = pd.DataFrame(sweep_features, columns=[f"pca_rank_{i+1}" for i in range(sweep_features.shape[1])])
+    sweep_df = pd.DataFrame(sweep_features, columns=[f'pca_rank_{i+1}' for i in range(sweep_features.shape[1])])
     df = pd.concat([df.reset_index(drop=True), sweep_df], axis=1)
     macro_factors = macro_pca_pipeline.transform(df[rank_cols])
     df['macro_f1'] = macro_factors[:, 0]
@@ -772,7 +774,7 @@ ridge.fit(X_std, y_rank)
 joblib.dump({'stack_scaler': scaler, 'ridge_for_weights': ridge}, './outputs/ridge_stack.pkl')
 
 
-print('✅アンサンブル用 Ridge,Scaler (保存済:"ridge_stack.pkl")')
+print('✅ridge_stack.pkl')
 
 # ===================================================================================================
 
@@ -810,7 +812,7 @@ for n_components in cat_components_list:
     # モデル保存
     joblib.dump({'cat_pipeline': cat_pipeline, 'cat_feature_cols': feature_cols}, f'./outputs/cat_pipeline_n{n_components}.pkl')
 
-    print(f'✅モデル(保存済:"cat_pipeline_n{n_components}.pkl")')
+    print(f'✅cat_pipeline_n{n_components}.pkl')
 
 
 # ======================================================
@@ -844,7 +846,7 @@ lgb_pipeline.fit(x_train, y_train)
 # モデル保存
 joblib.dump({'lgb_pipeline': lgb_pipeline, 'lgb_feature_cols': feature_cols}, './outputs/lgb_pipeline_n83.pkl')
 
-print('✅モデル(保存済:"lgb_pipeline.pkl")')
+print('✅lgb_pipeline_n83.pkl')
 
 # ---------------------------------
 # 特徴量作成
@@ -1102,7 +1104,7 @@ def predict(test: pl.DataFrame, buffer=336) -> pl.DataFrame:
                                    vol_cap=cap
                                   )
 
-    return pl.DataFrame({"prediction": position}), pred_today
+    return pl.DataFrame({'prediction': position}), pred_today
 
 # model(CatBoost)
 cat_pipeline_bundle_list = [
@@ -1207,4 +1209,3 @@ def reproduction_gateway():
 
 
 reproduction_gateway()
-
