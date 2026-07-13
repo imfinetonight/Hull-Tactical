@@ -113,6 +113,7 @@ To avoid dependency conflicts, it is highly recommended to use `conda` to set up
 # Create and activate a Python 3.10 environment
 conda create -n hull python=3.10 -y
 conda activate hull
+```
 
 ### Installation
 ```bash
