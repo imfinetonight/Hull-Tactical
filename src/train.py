@@ -118,8 +118,15 @@ class PurgedTimeSeriesSplit(BaseCrossValidator):
 
 
 # ─── Load Data───
-data   = pd.read_csv('/kaggle/input/hull-tactical-market-prediction/train.csv')
-sample = pd.read_csv('/kaggle/input/hull-tactical-market-prediction/test.csv')
+if os.path.exists('/kaggle/input/hull-tactical-market-prediction/train.csv'):
+    DATA_PATH_TRAIN = '/kaggle/input/hull-tactical-market-prediction/train.csv'
+    DATA_PATH_TEST = '/kaggle/input/hull-tactical-market-prediction/test.csv'
+else:
+    DATA_PATH_TRAIN = 'data/train.csv'
+    DATA_PATH_TEST = 'data/test.csv'
+
+data = pd.read_csv(DATA_PATH_TRAIN)
+sample = pd.read_csv(DATA_PATH_TEST)
 
 # ─── Train To Test ───
 ttt = data.copy()
@@ -139,12 +146,12 @@ true_forward_returns = data.tail(180)['forward_returns']
 
 # 特徴量作成用 （create_features の最過去日準拠）
 tail = pl.DataFrame(ttt.copy())
-tail.write_parquet('tail.parquet')
+tail.write_parquet('./outputs/tail.parquet')
 print('✅バッファデータ(保存済:"tail.parquet")')
 
 # zスコア用 （forward_returns のリストを予測値の累積として扱う）
 preds_sim = pl.DataFrame(data[['forward_returns']].copy())
-preds_sim.write_parquet('preds_sim.parquet')
+preds_sim.write_parquet('./outputs/preds_sim.parquet')
 print('✅バッファデータ(保存済:"preds_sim.parquet")')
 
 # ===================================================================================================
@@ -334,9 +341,9 @@ for c in anon_cols:
 rank_cols = [f'{c}_rank' for c in anon_cols]
 
 # ★ joblib.dump -> 'col_list.pkl'
-joblib.dump({'anon_cols': anon_cols, 'rank_cols': rank_cols}, 'col_list.pkl')
+joblib.dump({'anon_cols': anon_cols, 'rank_cols': rank_cols}, './outputs/col_list.pkl')
 
-print('✅anon_cols, rank_cols(保存済:"macro_pca_pipeline.pkl")')
+print('✅anon_cols, rank_cols(保存済:"./outputs/col_list.pkl")')
 
 # ===================================================================================================
 
@@ -351,9 +358,9 @@ macro_pca_pipeline = Pipeline([
 macro_pca_pipeline.fit(neo_train[rank_cols])
 
 # ★ joblib.dump -> 'macro_pca_pipeline.pkl'
-joblib.dump(macro_pca_pipeline, 'macro_pca_pipeline.pkl')
+joblib.dump(macro_pca_pipeline, './outputs/macro_pca_pipeline.pkl')
 
-print('✅パイプライン(保存済:"macro_pca_pipeline.pkl")')
+print('✅パイプライン(保存済:"./outputs/macro_pca_pipeline.pkl")')
 
 # ===================================================================================================
 
@@ -366,9 +373,9 @@ kmeans_pipeline = Pipeline([
 kmeans_pipeline.fit(macro_pca_pipeline.transform(neo_train[rank_cols]))
 
 # ★ joblib.dump -> 'kmeans_pipeline.pkl'
-joblib.dump(kmeans_pipeline, 'kmeans_pipeline.pkl')
+joblib.dump(kmeans_pipeline, './outputs/kmeans_pipeline.pkl')
 
-print('✅パイプライン(保存済:"kmeans_pipeline.pkl")')
+print('✅パイプライン(保存済:"./outputs/kmeans_pipeline.pkl")')
 
 # ===================================================================================================
 
@@ -378,7 +385,7 @@ print('✅パイプライン(保存済:"kmeans_pipeline.pkl")')
 # ---------------------------------------------------------------------------------------------------
 cat_components_list = [36,30,31,32]
 # ★ joblib.dump -> 'cat_components_list.pkl'
-joblib.dump(cat_components_list, 'cat_components_list.pkl')
+joblib.dump(cat_components_list, './outputs/cat_components_list.pkl')
 
 for n_components in cat_components_list:
     pca_pipeline_for_cat = Pipeline([
@@ -391,9 +398,9 @@ for n_components in cat_components_list:
     pca_pipeline_for_cat.fit(neo_train[rank_cols])
 
     # ★ joblib.dump -> 'pca_pipeline_n{n_components}.pkl'
-    joblib.dump(pca_pipeline_for_cat, f'pca_pipeline_for_cat_n{n_components}.pkl')
+    joblib.dump(pca_pipeline_for_cat, f'./outputs/pca_pipeline_for_cat_n{n_components}.pkl')
 
-    print(f'✅パイプライン(保存済:"pca_pipeline_n{n_components}.pkl")')
+    print(f'✅パイプライン(保存済:"./outputs/pca_pipeline_n{n_components}.pkl")')
 
 # ===================================================================================================
 
@@ -403,7 +410,7 @@ for n_components in cat_components_list:
 # ---------------------------------------------------------------------------------------------------
 #lgb_components_list = [83,51,74,67,72]
 ## ★ joblib.dump -> 'cat_components_list.pkl'
-#joblib.dump(lgb_components_list, 'lgb_components_list.pkl')
+#joblib.dump(lgb_components_list, './outputs/lgb_components_list.pkl')
 
 pca_pipeline_for_lgb_n83 = Pipeline([
     ('imputer', SimpleImputer(strategy='median')),
@@ -415,9 +422,9 @@ pca_pipeline_for_lgb_n83 = Pipeline([
 pca_pipeline_for_lgb_n83.fit(neo_train[rank_cols])
 
 # ★ joblib.dump -> 'pca_pipeline_for_lgb_n83.pkl'
-joblib.dump(pca_pipeline_for_lgb_n83, 'pca_pipeline_for_lgb_n83.pkl')
+joblib.dump(pca_pipeline_for_lgb_n83, './outputs/pca_pipeline_for_lgb_n83.pkl')
 
-print('✅パイプライン(保存済:"pca_pipeline_for_lgb_n83.pkl")')
+print('✅パイプライン(保存済:"./outputs/pca_pipeline_for_lgb_n83.pkl")')
 
 # ===================================================================================================
 
@@ -497,7 +504,7 @@ def add_regime_features(df):
 # ---------------------------------------------------------------------------------------------------
 def processing_anon_features_for_cat(df, n_components):
     # ↑で保存済の joblib をロード
-    loaded_pca = joblib.load(f'/kaggle/working/pca_pipeline_for_cat_n{n_components}.pkl')
+    loaded_pca = joblib.load(f'./outputs/pca_pipeline_for_cat_n{n_components}.pkl')
 
     # transform のみ
     pca_features = loaded_pca.transform(df[rank_cols])
@@ -536,7 +543,7 @@ def quick_train_for_cat(df, n_components):
 # ---------------------------------------------------------------------------------------------------
 def processing_anon_features_for_lgb(df):
     # ↑で保存済の joblib をロード
-    loaded_pca = joblib.load('/kaggle/working/pca_pipeline_for_lgb_n83.pkl')
+    loaded_pca = joblib.load('./outputs/pca_pipeline_for_lgb_n83.pkl')
 
     # transform のみ
     pca_features = loaded_pca.transform(df[rank_cols])
@@ -576,7 +583,7 @@ def quick_train_for_lgb(df):
 def processing_anon_features_for_sweep(df, num_sweep):
 
     # LightGBM 用（※パワープレイ（笑））
-    loaded_pca = joblib.load('/kaggle/working/pca_pipeline_for_lgb_sweep.pkl')
+    loaded_pca = joblib.load('./outputs/pca_pipeline_for_lgb_sweep.pkl')
     sweep_features = loaded_pca.transform(df[rank_cols])
 
     # CatBoost 用
@@ -626,7 +633,7 @@ def validation_catboost():
         print('-'*19)
         print(f'< n_components={n_components} >')
         print('-'*19)
-        confirm0(x_train)
+        #confirm0(x_train)
         df_tmp = x_train.copy()
         df_tmp['forward_returns'] = y_train.reset_index(drop=True)
         current_oof = catboost_cv(df_tmp, feature_cols)
@@ -681,7 +688,7 @@ def pca_sweep_cat():
 # ---------------------------------------------------------------------------------------------------
 def validation_lightgbm():
     x_train, y_train, feature_cols = quick_train_for_lgb(neo_train)
-    confirm0(x_train)
+    #confirm0(x_train)
     df_tmp = x_train.copy()
     df_tmp['forward_returns'] = y_train.reset_index(drop=True)
     print('')
@@ -720,7 +727,7 @@ def pca_sweep_lgb():
             ('pca', PCA(n_components=i, svd_solver='full'))
         ])
         pca_pipeline_for_lgb_sweep.fit(neo_train[rank_cols])
-        joblib.dump(pca_pipeline_for_lgb_sweep, 'pca_pipeline_for_lgb_sweep.pkl')
+        joblib.dump(pca_pipeline_for_lgb_sweep, './outputs/pca_pipeline_for_lgb_sweep.pkl')
         
         x_train, y_train, feature_cols = quick_train_for_sweep(neo_train, i)
         df_tmp = x_train.copy()
@@ -762,7 +769,7 @@ ridge = Ridge(alpha=12.5, fit_intercept=True)
 ridge.fit(X_std, y_rank)
 
 # ★ joblib.dump -> 'ridge_stack.pkl'
-joblib.dump({'stack_scaler': scaler, 'ridge_for_weights': ridge}, 'ridge_stack.pkl')
+joblib.dump({'stack_scaler': scaler, 'ridge_for_weights': ridge}, './outputs/ridge_stack.pkl')
 
 
 print('✅アンサンブル用 Ridge,Scaler (保存済:"ridge_stack.pkl")')
@@ -801,7 +808,7 @@ for n_components in cat_components_list:
     cat_pipeline.fit(x_train, y_train)
 
     # モデル保存
-    joblib.dump({'cat_pipeline': cat_pipeline, 'cat_feature_cols': feature_cols}, f'cat_pipeline_n{n_components}.pkl')
+    joblib.dump({'cat_pipeline': cat_pipeline, 'cat_feature_cols': feature_cols}, f'./outputs/cat_pipeline_n{n_components}.pkl')
 
     print(f'✅モデル(保存済:"cat_pipeline_n{n_components}.pkl")')
 
@@ -835,7 +842,7 @@ x_train, y_train, feature_cols = quick_train_for_lgb(neo_train)
 lgb_pipeline.fit(x_train, y_train)
 
 # モデル保存
-joblib.dump({'lgb_pipeline': lgb_pipeline, 'lgb_feature_cols': feature_cols}, 'lgb_pipeline_n83.pkl')
+joblib.dump({'lgb_pipeline': lgb_pipeline, 'lgb_feature_cols': feature_cols}, './outputs/lgb_pipeline_n83.pkl')
 
 print('✅モデル(保存済:"lgb_pipeline.pkl")')
 
@@ -1099,58 +1106,58 @@ def predict(test: pl.DataFrame, buffer=336) -> pl.DataFrame:
 
 # model(CatBoost)
 cat_pipeline_bundle_list = [
-    joblib.load('/kaggle/working/cat_pipeline_n36.pkl'),
-    joblib.load('/kaggle/working/cat_pipeline_n30.pkl'),
-    joblib.load('/kaggle/working/cat_pipeline_n31.pkl'),
-    joblib.load('/kaggle/working/cat_pipeline_n32.pkl')
+    joblib.load('./outputs/cat_pipeline_n36.pkl'),
+    joblib.load('./outputs/cat_pipeline_n30.pkl'),
+    joblib.load('./outputs/cat_pipeline_n31.pkl'),
+    joblib.load('./outputs/cat_pipeline_n32.pkl')
 ]
 cat_pipeline_list = [b['cat_pipeline'] for b in cat_pipeline_bundle_list]
 cat_feature_cols_list = [b['cat_feature_cols'] for b in cat_pipeline_bundle_list]
 
 # model(LightGBM)
 lgb_pipeline_bundle_list = [
-    joblib.load('/kaggle/working/lgb_pipeline_n83.pkl')
+    joblib.load('./outputs/lgb_pipeline_n83.pkl')
 ]
 lgb_pipeline_list = [b['lgb_pipeline'] for b in lgb_pipeline_bundle_list]
 lgb_feature_cols_list = [b['lgb_feature_cols'] for b in lgb_pipeline_bundle_list]
 
 # PCA for CatBoost
 pca_pipeline_for_cat_bundle_list = [
-    joblib.load('/kaggle/working/pca_pipeline_for_cat_n36.pkl'),
-    joblib.load('/kaggle/working/pca_pipeline_for_cat_n30.pkl'),
-    joblib.load('/kaggle/working/pca_pipeline_for_cat_n31.pkl'),
-    joblib.load('/kaggle/working/pca_pipeline_for_cat_n32.pkl')
+    joblib.load('./outputs/pca_pipeline_for_cat_n36.pkl'),
+    joblib.load('./outputs/pca_pipeline_for_cat_n30.pkl'),
+    joblib.load('./outputs/pca_pipeline_for_cat_n31.pkl'),
+    joblib.load('./outputs/pca_pipeline_for_cat_n32.pkl')
 ]
 pca_pipeline_for_cat_list = [i for i in pca_pipeline_for_cat_bundle_list]
 
 # PCA for LightGBM
 pca_pipeline_for_lgb_bundle_list = [
-    joblib.load('/kaggle/working/pca_pipeline_for_lgb_n83.pkl')
+    joblib.load('./outputs/pca_pipeline_for_lgb_n83.pkl')
 ]
 pca_pipeline_for_lgb_list = [i for i in pca_pipeline_for_lgb_bundle_list]
 
 # column_list
-col_list_bundle = joblib.load('/kaggle/working/col_list.pkl')
+col_list_bundle = joblib.load('./outputs/col_list.pkl')
 anon_cols = col_list_bundle['anon_cols']
 rank_cols = col_list_bundle['rank_cols']
 
 # macro PCA
-macro_pca_pipeline = joblib.load('/kaggle/working/macro_pca_pipeline.pkl')
+macro_pca_pipeline = joblib.load('./outputs/macro_pca_pipeline.pkl')
 
 # KMeans
-kmeans_pipeline = joblib.load('/kaggle/working/kmeans_pipeline.pkl')
+kmeans_pipeline = joblib.load('./outputs/kmeans_pipeline.pkl')
 
 # cat_components_list
-cat_components_list = joblib.load('/kaggle/working/cat_components_list.pkl')
+cat_components_list = joblib.load('./outputs/cat_components_list.pkl')
 
 # Ridge Stack
-ridge_stack_bundle = joblib.load('/kaggle/working/ridge_stack.pkl')
+ridge_stack_bundle = joblib.load('./outputs/ridge_stack.pkl')
 stack_scaler = ridge_stack_bundle['stack_scaler']
 ridge_for_weights = ridge_stack_bundle['ridge_for_weights']
 
 # data
-tail = pl.read_parquet('tail.parquet')
-preds_sim = pl.read_parquet('preds_sim.parquet')
+tail = pl.read_parquet('./outputs/tail.parquet')
+preds_sim = pl.read_parquet('./outputs/preds_sim.parquet')
 
 # エラー非表示
 warnings.filterwarnings('ignore', category=FutureWarning)

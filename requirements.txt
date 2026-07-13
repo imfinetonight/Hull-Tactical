@@ -8,3 +8,5 @@ xgboost
 joblib
 matplotlib
 scipy
+os
+pyarrow
