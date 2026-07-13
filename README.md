@@ -83,24 +83,21 @@ Equally important is transforming predictions into robust portfolio positions.
 ## Repository Structure
 
 ```
-Hull_Tactical_Market_Prediction/
-│── data/
-│   ├── train.csv
-│   ├── test.csv
-│   └── kaggle_evaluation/
+Hull_Tactical/
+│── images/
+│   ├── 174th.png
+│   └── Architecture.png
 │
 │── notebooks/
-│   ├── 01_EDA.ipynb
-│   ├── 02_Baseline_LGBM.ipynb
-│   ├── 03_Feature_Engineering.ipynb
-│   └── 04_Ensemble_Strategy.ipynb
+│   ├── inference.ipynb
+│   └── train.ipynb
 │
 │── src/
-│   ├── features.py        # Feature engineering
-│   ├── models.py          # Model definitions
-│   ├── strategy.py        # Position sizing logic
-│   └── evaluation.py      # Sharpe ratio reproduction
+│   ├── inference.py
+│   └── train.py
 │
+│── .gitignore
+│── LICENSE
 │── README.md
 └── requirements.txt
 ```
