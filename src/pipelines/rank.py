@@ -1,5 +1,7 @@
 import joblib
 
+from src.config import config as cfg
+
 
 def rank_encoding(train, df_train):
     # 匿名特徴量リスト（'D~'以外）
@@ -14,7 +16,7 @@ def rank_encoding(train, df_train):
     rank_cols = [f'{c}_rank' for c in anon_cols]
 
     # ★ joblib.dump -> 'col_list.pkl'
-    joblib.dump({'anon_cols': anon_cols, 'rank_cols': rank_cols}, './outputs/col_list.pkl')
+    joblib.dump({'anon_cols': anon_cols, 'rank_cols': rank_cols}, f'{cfg.OUT_DIR}/col_list.pkl')
     print("✅saved 'col_list.pkl'")
 
     return df_train_ranked, rank_cols

@@ -5,9 +5,15 @@ OUT_DIR = 'outputs'
 COMPETITION_DIR = '/kaggle/input/hull-tactical-market-prediction'
 
 
+# ─── PCA ───────────────────────────────
 cat_components_list = [36,30,31,32]
 lgb_components_list = [83]
 keys = [f'oof_n{n}' for n in cat_components_list] + [f'oof_lgb{n}' for n in lgb_components_list]
+
+
+# ─── KMeans ───────────────────────────────
+n_clusters = 6
+n_init = 20
 
 
 # ─── CrossValidation ────────────────────────

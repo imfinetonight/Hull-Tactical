@@ -74,8 +74,3 @@ def ridge_stacking(n_components_cat=cfg.cat_components_list, n_components_lgb=cf
     ridge.fit(X_std, y_rank)
     joblib.dump({'stack_scaler': scaler, 'ridge_for_weights': ridge}, f'{cfg.OUT_DIR}/ridge_stack.pkl')
     print("✅saved 'ridge_stack.pkl'")
-
-
-
-if __name__ == "__main__":
-    ridge_stacking()
