@@ -1,0 +1,10 @@
+last_days = None
+preds_trace = None
+cat_pipelines = None
+lgb_pipelines = None
+macro_pca_pipeline = None
+kmeans_pipeline = None
+anon_cols = None
+rank_cols = None
+stack_scaler = None
+ridge_for_weights = None
