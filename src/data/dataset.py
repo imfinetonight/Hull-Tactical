@@ -1,6 +1,3 @@
-
-
-
 def make_train_test(train):
     train2test = train.copy()
     train2test['lagged_forward_returns'] = train2test['forward_returns'].shift(1)
