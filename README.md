@@ -68,6 +68,12 @@ Deployment:
 
 This competition taught me that model performance alone is not sufficient for production-grade machine learning.
 
+For example, a seemingly minor temporal inconsistency—using current observations instead of only historical information for market regime estimation—significantly degraded out-of-sample performance. Aligning all rolling features with the online inference timeline substantially improved the Sharpe ratio.
+
+I also realized that generating accurate predictions is only one part of a trading system.   
+Equally important is transforming those predictions into robust portfolio positions through adaptive risk management.
+
+  
 I learned how to:
 
 - Build reproducible ML pipelines
@@ -76,9 +82,6 @@ I learned how to:
 - Separate forecasting from execution
 - Transform model predictions into adaptive trading positions
 - Optimize latency-aware inference pipelines
-
-I realized that generating accurate predictions is only one part of a trading system.  
-Equally important is transforming predictions into robust portfolio positions.  
 
 ## Repository Structure
 
