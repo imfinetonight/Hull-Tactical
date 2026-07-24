@@ -2,8 +2,7 @@
 🥈 Silver Medal Solution  
 Ranked 174th out of 3,677 teams in the Kaggle Hull Tactical Market Prediction competition.  
 
-![Pipeline](images/174th.png)
-*The current username is **Water Baby**.  
+![Pipeline](images/174.png)
 
 ## Overview
 This repository contains my solution for the **Kaggle Hull Tactical Market Prediction competition**.  
