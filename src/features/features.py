@@ -58,11 +58,12 @@ def add_regime_features(df):
     # Market Vol Regime
     rv_21 = mfer.shift(1).rolling(21).std()
     rv_63 = mfer.shift(1).rolling(63).std()
-    df['mkt_vol_regime_raw'] = rv_21 / (rv_63 + 1e-9)
+    #df['mkt_vol_regime_raw'] = rv_21 / (rv_63 + 1e-9)
     df['mkt_vol_regime'] = df['mkt_vol_regime_raw'].ewm(span=21, adjust=False).mean() # smoothing
 
     # VIX Proxy
-    df['vix_proxy'] = rv_21 / rv_63.rolling(5).mean()
+    #df['vix_proxy'] = rv_21 / rv_63
+    #df['vix_proxy'] = rv_21 / rv_63.rolling(5).mean()
     
     return df
 
