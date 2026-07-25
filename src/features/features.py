@@ -32,7 +32,7 @@ def create_features(df):
     for k in [1,3]:
         df[f'mom_{k}'] = df['lagged_forward_returns'].shift(1) - df['lagged_forward_returns'].shift(k+1)
     
-    df['accel_3'] = df['lagged_forward_returns'].shift(1).diff(3)
+    #df['accel_3'] = df['lagged_forward_returns'].shift(1).diff(3)
     
     # Seasonal
     df['sin_5'] = np.sin(2*np.pi*df['date_id'] / 5)
