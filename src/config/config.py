@@ -46,7 +46,7 @@ lgb_params = {
     'feature_fraction': 0.8,
     'bagging_fraction': 0.7,
     'bagging_freq': 1,
-    'max_depth': -1,
+    'max_depth': 3,
     'n_estimators': 300,
     'random_state': 42,
     'verbose': -1
