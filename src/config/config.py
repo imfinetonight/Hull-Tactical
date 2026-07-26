@@ -63,12 +63,12 @@ ridge_config = {
 # ─── Position Size Prameters ──────────────────────────────────
 # cluster scale
 CLUSTER_SCALE = {
-    0: 1.0,
-    1: 0.8,
-    2: 1.25,
-    3: 0.6,
-    4: 1.15,
-    5: 0.9
+    0: 0.7,   # risk-off
+    1: 1.05,  # stable
+    2: 1.05,  # growth
+    3: 1.15,  # strongest
+    4: 1.0,   # neutral
+    5: 0.85   # unstable
 }
 
 # vol cap
